@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "212265554291",
+    "project_id": "smart-nfc-51c54",
+    "storage_bucket": "smart-nfc-51c54.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:212265554291:android:dfb23deacc35cdb972f506",
+        "android_client_info": {
+          "package_name": "com.smartnfc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "212265554291-m9dfcs3live5kmmjrt8gsp1n3pds64cj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5dv_5Jcek32wSqWwrcQeK9pgwlbm6bu0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "212265554291-m9dfcs3live5kmmjrt8gsp1n3pds64cj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
