@@ -8,6 +8,7 @@ import LoginScreen from './screens/LoginScreen';
 import Registration from './screens/Registration';
 import HomeScreen from './screens/HomeScreen';
 import auth from '@react-native-firebase/auth';
+import TagDetailScreen from './screens/TagDetailScreen';
 const Stack = createNativeStackNavigator();
 
 const App = () => {
@@ -46,6 +47,11 @@ const App = () => {
           headerShown: false,
         }}>
         <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen
+          options={{headerShown: false}}
+          name="Tap"
+          component={TagDetailScreen}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

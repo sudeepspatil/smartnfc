@@ -13,8 +13,9 @@ import {
 import auth from '@react-native-firebase/auth';
 import React, {useEffect, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
+import nfcManager, {Ndef, NfcTech} from 'react-native-nfc-manager';
 
-const HomeScreen = () => {
+const HomeScreen = ({navigation}) => {
   const [name, setName] = useState('');
   const [keyName, setKeyName] = useState('');
   const [keyPassword, setKeyPassword] = useState('');
@@ -23,6 +24,8 @@ const HomeScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedKey, setSelectedKey] = useState(null);
   const [password, setPassword] = useState('');
+  const [hasNfc, setHasNfc] = React.useState(null);
+  const [enable, setEnable] = React.useState(null);
 
   const handleCardPress = key => {
     setSelectedKey(key);
@@ -38,6 +41,121 @@ const HomeScreen = () => {
     setSelectedKey(null);
     setPassword('');
   };
+
+  //NFC Things
+
+  React.useEffect(() => {
+    async function checkNfc() {
+      const supported = await nfcManager.isSupported();
+      if (supported) {
+        await nfcManager.start();
+        setEnable(await nfcManager.isEnabled());
+      }
+      setHasNfc(supported);
+    }
+
+    checkNfc();
+  }, []);
+
+  async function readNdef() {
+    try {
+      await nfcManager.requestTechnology(NfcTech.Ndef);
+      const tag = await nfcManager.getTag();
+      navigation.navigate('Tap', {tag});
+    } catch (ex) {
+      //bypass
+    } finally {
+      nfcManager.cancelTechnologyRequest();
+    }
+  }
+
+  function renderNfcButtons() {
+    if (hasNfc === null) {
+      return null;
+    } else if (!hasNfc) {
+      return (
+        <View className="bg-slate-100 w-full h-1/3 absolute bottom-0 left-0 flex-1 justify-center items-center">
+          <Text>Your device doesnt support NFC</Text>
+        </View>
+      );
+    } else if (!enable) {
+      return (
+        <View className="bg-slate-100 w-full h-1/3 absolute bottom-0 left-0 flex-1 justify-center items-center">
+          <Text className="font-bold text-base mt-2">
+            Your NFC is not enabled
+          </Text>
+          <View className="w-3/5 justify-center items-center mt-10">
+            <TouchableOpacity
+              onPress={() => {
+                nfcManager.goToNfcSetting();
+              }}
+              className=" bg-blue-600 w-full p-4 rounded-md items-center">
+              <Text className=" text-white font-bold text-base">
+                GO TO SETTINGS
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View className="w-3/5 justify-center items-center mt-10">
+            <TouchableOpacity
+              onPress={async () => {
+                setEnable(await nfcManager.isEnabled());
+              }}
+              className=" bg-blue-600 w-full p-4 rounded-md items-center">
+              <Text className=" text-white font-bold text-base">
+                CHECK AGAIN
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      );
+    }
+    return (
+      <>
+        <View className="bg-slate-100 w-full h-1/3 absolute bottom-0 left-0 flex-1 justify-center items-center">
+          <Text className=" ml-6 font-bold text-lg my-3">
+            {selectedKey?.name}
+          </Text>
+          <TextInput
+            value={selectedKey?.password}
+            className="bg-white px-3 py-2 mt-1 rounded w-11/12"
+            // onChangeText={handlePasswordChange}
+            placeholder={selectedKey?.password}
+          />
+          <TouchableOpacity
+            onPress={() => {
+              writeNdef();
+              handleModalClose();
+            }}
+            className="bg-blue-600 p-4 mt-3 rounded-md items-center w-1/2">
+            <Text className="text-white font-bold text-base">Write</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className=" bg-blue-600 p-4 my-3 rounded-md items-center w-1/2"
+            onPress={() => {
+              readNdef();
+            }}>
+            <Text className=" text-white font-bold text-base">TAP</Text>
+          </TouchableOpacity>
+        </View>
+      </>
+    );
+  }
+
+  async function writeNdef() {
+    const uriRecord = Ndef.textRecord(`${selectedKey?.password}`);
+    console.log(uriRecord);
+    const bytes = Ndef.encodeMessage([uriRecord]);
+    console.warn(bytes);
+
+    try {
+      await nfcManager.requestTechnology(NfcTech.Ndef);
+      await nfcManager.ndefHandler.writeNdefMessage(bytes);
+    } catch (ex) {
+      // bypass
+    } finally {
+      nfcManager.cancelTechnologyRequest();
+    }
+  }
 
   useEffect(() => {
     firestore()
@@ -143,6 +261,7 @@ const HomeScreen = () => {
             <Text className="text-blue-700 font-500">See all</Text>
           </TouchableOpacity>
         </View>
+
         <View className="flex justify-center items-center px-5">
           <FlatList
             data={keys}
@@ -163,27 +282,13 @@ const HomeScreen = () => {
             }}
           />
         </View>
+
         <Modal
           animationType={'slide'}
           transparent={true}
           visible={modalVisible}
           onRequestClose={handleModalClose}>
-          <View className="bg-slate-100 w-full h-1/3 absolute bottom-0 left-0 flex-1 justify-center items-center">
-            <Text className=" ml-6 font-bold text-lg my-3">
-              {selectedKey?.name}
-            </Text>
-            <TextInput
-              value={selectedKey?.password}
-              className="bg-white px-3 py-2 mt-1 rounded w-11/12"
-              // onChangeText={handlePasswordChange}
-              placeholder={selectedKey?.password}
-            />
-            <TouchableOpacity
-              onPress={handleModalClose}
-              className="bg-blue-600 p-4 my-3 rounded-md items-center w-1/2">
-              <Text className="text-white font-bold text-base">Write</Text>
-            </TouchableOpacity>
-          </View>
+          {renderNfcButtons()}
         </Modal>
 
         <Modal
@@ -217,6 +322,7 @@ const HomeScreen = () => {
             </View>
           </View>
         </Modal>
+
         <View className="flex-1 justify-center items-center mt-7 mx-6 h-96">
           <ImageBackground
             source={require('../assets/bg.jpg')}
