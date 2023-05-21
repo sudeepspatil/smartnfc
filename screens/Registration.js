@@ -40,34 +40,38 @@ const Registration = ({navigation}) => {
       <View className="w-4/5">
         <TextInput
           placeholder="First Name"
+          placeholderTextColor="#000"
           value={firstName}
           onChangeText={text => setFirstName(text)}
           autoCorrect={false}
-          className="bg-white px-3 py-2 mt-1 rounded"
+          className="bg-white px-3 py-2 mt-1 rounded text-black"
         />
         <TextInput
           placeholder="Last Name"
+          placeholderTextColor="#000"
           value={lastName}
           onChangeText={text => setLastName(text)}
           autoCorrect={false}
-          className="bg-white px-3 py-2 mt-1 rounded"
+          className="bg-white px-3 py-2 mt-1 rounded text-black"
         />
         <TextInput
           placeholder="Email"
+          placeholderTextColor="#000"
           value={email}
           onChangeText={text => setEmail(text)}
           autoCorrect={false}
           autoCapitalize="none"
           keyboardType="email-address"
-          className="bg-white px-3 py-2 mt-1 rounded"
+          className="bg-white px-3 py-2 mt-1 rounded text-black"
         />
         <TextInput
           placeholder="Password"
+          placeholderTextColor="#000"
           value={password}
           onChangeText={text => setPassword(text)}
           autoCorrect={false}
           autoCapitalize="none"
-          className="bg-white px-3 py-2 mt-1 rounded-md"
+          className="bg-white px-3 py-2 mt-1 rounded-md text-black"
           secureTextEntry
         />
       </View>

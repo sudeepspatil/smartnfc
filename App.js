@@ -9,6 +9,8 @@ import Registration from './screens/Registration';
 import HomeScreen from './screens/HomeScreen';
 import auth from '@react-native-firebase/auth';
 import TagDetailScreen from './screens/TagDetailScreen';
+import Share from './screens/ShareScreen';
+import Guest from './screens/GuestScreen';
 const Stack = createNativeStackNavigator();
 
 const App = () => {
@@ -36,6 +38,7 @@ const App = () => {
           }}>
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Registration" component={Registration} />
+          <Stack.Screen name="Guest" component={Guest} />
         </Stack.Navigator>
       </NavigationContainer>
     );
@@ -51,6 +54,11 @@ const App = () => {
           options={{headerShown: false}}
           name="Tap"
           component={TagDetailScreen}
+        />
+        <Stack.Screen
+          options={{headerShown: false}}
+          name="Share"
+          component={Share}
         />
       </Stack.Navigator>
     </NavigationContainer>

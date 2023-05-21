@@ -6,6 +6,15 @@ const LoginScreen = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const handleResetPassword = async () => {
+    try {
+      await auth().sendPasswordResetEmail(email);
+      alert('Password reset email sent. Please check your inbox.');
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
   login = async (email, password) => {
     try {
       await auth().signInWithEmailAndPassword(email, password);
@@ -23,6 +32,7 @@ const LoginScreen = ({navigation}) => {
       <View className="w-4/5">
         <TextInput
           placeholder="Email"
+          placeholderTextColor="#000"
           value={email}
           autoCorrect={false}
           autoCapitalize="none"
@@ -31,6 +41,7 @@ const LoginScreen = ({navigation}) => {
         />
         <TextInput
           placeholder="Password"
+          placeholderTextColor="#000"
           value={password}
           autoCapitalize="none"
           onChangeText={text => setPassword(text)}
@@ -47,7 +58,7 @@ const LoginScreen = ({navigation}) => {
         </TouchableOpacity>
       </View>
       <TouchableOpacity
-        onPress={() => {}}
+        onPress={() => handleResetPassword()}
         className="mt-5"
         // className=' bg-white w-full p-4 rounded-md items-center mt-1 border-blue-600 border-2'
       >
@@ -63,6 +74,15 @@ const LoginScreen = ({navigation}) => {
       >
         <Text className=" text-blue-600 font-bold text-base">
           Don't have an account? Register Now
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('Guest')}
+        className="mt-5"
+        // className=' bg-white w-full p-4 rounded-md items-center mt-1 border-blue-600 border-2'
+      >
+        <Text className=" text-blue-600 font-bold text-base">
+          Are you a Guest?
         </Text>
       </TouchableOpacity>
     </View>

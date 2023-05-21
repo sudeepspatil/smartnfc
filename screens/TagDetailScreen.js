@@ -26,7 +26,7 @@ function TagDetailScreen(props) {
           <Text>{uri}</Text>
         </TouchableOpacity>
       ) : (
-        <Text>{JSON.stringify(tag, null, 2)}</Text>
+        <Text className='text-black'>{JSON.stringify(tag, null, 2)}</Text>
       )}
     </View>
   );

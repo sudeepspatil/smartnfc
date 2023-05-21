@@ -9,7 +9,9 @@ import {
   TextInput,
   FlatList,
   Modal,
+  Alert,
 } from 'react-native';
+
 import auth from '@react-native-firebase/auth';
 import React, {useEffect, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
@@ -76,12 +78,19 @@ const HomeScreen = ({navigation}) => {
       return (
         <View className="bg-slate-100 w-full h-1/3 absolute bottom-0 left-0 flex-1 justify-center items-center">
           <Text>Your device doesnt support NFC</Text>
+          <TouchableOpacity
+            onPress={() => {
+              handleModalClose();
+            }}
+            className="bg-blue-600 p-4 mt-3 rounded-md items-center w-1/2">
+            <Text className="text-white font-bold text-base">Close</Text>
+          </TouchableOpacity>
         </View>
       );
     } else if (!enable) {
       return (
         <View className="bg-slate-100 w-full h-1/3 absolute bottom-0 left-0 flex-1 justify-center items-center">
-          <Text className="font-bold text-base mt-2">
+          <Text className="font-bold text-base mt-2 text-gray-400">
             Your NFC is not enabled
           </Text>
           <View className="w-3/5 justify-center items-center mt-10">
@@ -112,29 +121,32 @@ const HomeScreen = ({navigation}) => {
     return (
       <>
         <View className="bg-slate-100 w-full h-1/3 absolute bottom-0 left-0 flex-1 justify-center items-center">
-          <Text className=" ml-6 font-bold text-lg my-3">
+          <Text className=" ml-6 font-bold text-lg my-3 text-gray-400">
             {selectedKey?.name}
           </Text>
           <TextInput
             value={selectedKey?.password}
-            className="bg-white px-3 py-2 mt-1 rounded w-11/12"
+            className="bg-white px-3 py-2 mt-1 rounded w-11/12 text-black"
             // onChangeText={handlePasswordChange}
             placeholder={selectedKey?.password}
+            placeholderTextColor="#000"
           />
           <TouchableOpacity
             onPress={() => {
               writeNdef();
               handleModalClose();
+              alert('tap on the NFC Tag...');
             }}
             className="bg-blue-600 p-4 mt-3 rounded-md items-center w-1/2">
             <Text className="text-white font-bold text-base">Write</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className=" bg-blue-600 p-4 my-3 rounded-md items-center w-1/2"
             onPress={() => {
-              readNdef();
-            }}>
-            <Text className=" text-white font-bold text-base">TAP</Text>
+              navigation.navigate('Share');
+              handleModalClose();
+            }}
+            className="bg-blue-600 p-4 mt-3 rounded-md items-center w-1/2">
+            <Text className="text-white font-bold text-base">Share</Text>
           </TouchableOpacity>
         </View>
       </>
@@ -242,7 +254,7 @@ const HomeScreen = ({navigation}) => {
               />
               <Text className="text-blue-600 font-bold text-sm">SmartNFC</Text>
             </View>
-            <Text className="font-bold text-base mt-2">
+            <Text className="font-bold text-base mt-2 text-gray-400">
               Hello, {name.firstName} {name.lastName}
             </Text>
           </View>
@@ -256,7 +268,7 @@ const HomeScreen = ({navigation}) => {
         </View>
 
         <View className=" mx-6 flex-row justify-between mb-4">
-          <Text className="font-bold text-xl">My Keys</Text>
+          <Text className="font-bold text-xl text-gray-400">My Keys</Text>
           <TouchableOpacity>
             <Text className="text-blue-700 font-500">See all</Text>
           </TouchableOpacity>
@@ -269,7 +281,9 @@ const HomeScreen = ({navigation}) => {
             showsHorizontalScrollIndicator={false}
             renderItem={({item}) => {
               return (
-                <TouchableOpacity onPress={() => handleCardPress(item)}>
+                <TouchableOpacity
+                  onPress={() => handleCardPress(item)}
+                  onLongPress={() => handleCardLongPress(item)}>
                   <Image
                     source={require('../assets/card.png')}
                     className="mx-2 relative"
@@ -297,18 +311,22 @@ const HomeScreen = ({navigation}) => {
           transparent={true}
           onRequestClose={() => {}}>
           <View className="bg-slate-100 w-full h-1/3 absolute bottom-0 left-0">
-            <Text className=" ml-6 font-bold text-lg my-3">Add New Key</Text>
+            <Text className=" ml-6 font-bold text-lg my-3 text-gray-400">
+              Add New Key
+            </Text>
             <View className="flex justify-center items-center ">
               <TextInput
-                className="bg-white px-3 py-2 mt-1 rounded w-11/12"
+                className="bg-white px-3 py-2 mt-1 rounded w-11/12 text-black"
                 placeholder="Enter Key Name"
                 value={keyName}
+                placeholderTextColor={'#000'}
                 onChangeText={value => setKeyName(value)}
               />
               <TextInput
-                className="bg-white px-3 py-2 mt-3 rounded w-11/12"
+                className="bg-white px-3 py-2 mt-3 rounded w-11/12 text-black"
                 placeholder="Password"
                 value={keyPassword}
+                placeholderTextColor={'#000'}
                 onChangeText={value => setKeyPassword(value)}
               />
               <TouchableOpacity
@@ -353,6 +371,16 @@ const HomeScreen = ({navigation}) => {
             password, Then hit ADD Button. Now Press on the key card you created
             now and confirm the password Then Tap the phone on the LOCK! Done!!
           </Text>
+        </View>
+        <View className="flex-1 items-center">
+          <TouchableOpacity
+            className=" bg-blue-600 p-4 my-3 rounded-md items-center w-1/2"
+            onPress={() => {
+              readNdef();
+              handleModalClose();
+            }}>
+            <Text className=" text-white font-bold text-base">Read card</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
